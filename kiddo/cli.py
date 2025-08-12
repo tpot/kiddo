@@ -1,7 +1,7 @@
 import json
 import click
 
-from api import StudentLogin
+from kiddo.api import StudentLogin
 
 @click.group()
 @click.option("--verbose", "-v", is_flag=True, help="Display info on what's happening")

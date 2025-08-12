@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kiddo"
-version = "0.1.0"
+version = "0.1.1"
 description = "A tool for interacting with HarvestOS data"
 authors = [
     { name = "Tim Potter", email = "tim.potter@canberra.edu.au" }
