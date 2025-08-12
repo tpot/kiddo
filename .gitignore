@@ -1,5 +1,8 @@
+# Virtual env locations
 /.direnv/
 /.venv/
 
+# Python temp files
 /kiddo.egg-info/
 __pycache__/
+/build/
