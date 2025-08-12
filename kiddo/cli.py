@@ -54,4 +54,4 @@ def main():
 
 # Keep around the name == "__main__" check so we can run locally
 if __name__ == "__main__":
-    cli()
+    main()
