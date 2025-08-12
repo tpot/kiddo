@@ -4,9 +4,9 @@ import click
 from kiddo.api import StudentLogin
 
 @click.group()
-@click.option("--verbose", "-v", is_flag=True, help="Display info on what's happening")
-@click.option("--debug", is_flag=True, help="Display a lot of info on what's happening")
-@click.option("--base-url", envvar=["KIDDO_BASE_URL"], help="Base URL of API server")
+@click.option("--verbose", "-v", is_flag=True, help="Display info on what's happening.")
+@click.option("--debug", is_flag=True, help="Display a lot of info on what's happening.")
+@click.option("--base-url", envvar=["KIDDO_BASE_URL"], help="Base URL of API server.")
 @click.pass_context
 def cli(ctx, verbose, debug, base_url):
 
@@ -18,7 +18,7 @@ def cli(ctx, verbose, debug, base_url):
 
 @cli.command()
 @click.pass_context
-@click.option("--code", "emoji_code", required=True, help="Emoji code in plain text format")
+@click.option("--code", "emoji_code", required=True, help="Emoji code in plain text format.")
 def emoji_login(ctx, emoji_code):
     """Test a student's login using an emoji code."""
 
