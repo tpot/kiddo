@@ -48,5 +48,10 @@ def emoji_login(ctx, emoji_code):
     else:
         click.echo(f"Login OK, user_id={user_data['id']}")
 
+# Main function invoked by pip
 def main():
    cli()
+
+# Keep around the name == "__main__" check so we can run locally
+if __name__ == "__main__":
+    cli()
