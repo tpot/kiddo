@@ -54,3 +54,11 @@ class StudentLogin:
         resp.raise_for_status()
 
         return resp.json()
+
+    def challenge(self, id):
+        """Return information on a challenge by ID number."""
+
+        resp = self.session.get(f"{self.base_url}/api/challenge/{id}")
+        resp.raise_for_status()
+
+        return resp.json()
