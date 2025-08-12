@@ -1,10 +1,12 @@
+import json
 import click
+
 from api import StudentLogin
 
 @click.group()
-@click.option("--verbose", "-v", is_flag=True)
-@click.option("--debug", is_flag=True)
-@click.option("--base-url", envvar=["KIDDO_BASE_URL"])
+@click.option("--verbose", "-v", is_flag=True, help="Display info on what's happening")
+@click.option("--debug", is_flag=True, help="Display a lot of info on what's happening")
+@click.option("--base-url", envvar=["KIDDO_BASE_URL"], help="Base URL of API server")
 @click.pass_context
 def cli(ctx, verbose, debug, base_url):
 
@@ -16,8 +18,9 @@ def cli(ctx, verbose, debug, base_url):
 
 @cli.command()
 @click.pass_context
-@click.option("--emoji-code", required=True)
+@click.option("--code", "emoji_code", required=True, help="Emoji code in plain text format")
 def emoji_login(ctx, emoji_code):
+    """Test a student's login using an emoji code."""
 
     verbose = ctx.obj["verbose"]
     debug = ctx.obj["debug"]
@@ -41,7 +44,9 @@ def emoji_login(ctx, emoji_code):
     user_data = user.me()
 
     if verbose:
-        print(user_data)
+        click.echo(json.dumps(user_data, indent=2))
+    else:
+        click.echo(f"Login OK, user_id={user_data['id']}")
 
 if __name__ == "__main__":
    cli()
