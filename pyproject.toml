@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kiddo"
+version = "0.1.0"
+description = "A tool for interacting with HarvestOS data"
+authors = [
+    { name = "Tim Potter", email = "tim.potter@canberra.edu.au" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+
+[project.scripts]
+kiddo = "kiddo.cli:main"

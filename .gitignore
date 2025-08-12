@@ -1,0 +1,5 @@
+/.direnv/
+/.venv/
+
+/kiddo.egg-info/
+__pycache__/
