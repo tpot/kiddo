@@ -48,5 +48,5 @@ def emoji_login(ctx, emoji_code):
     else:
         click.echo(f"Login OK, user_id={user_data['id']}")
 
-if __name__ == "__main__":
+def main():
    cli()
