@@ -44,6 +44,7 @@ class StudentLogin:
 
         self.base_url = base_url
         self.session = requests.Session()
+        self.access_token = None
 
     def login(self, emoji_code):
         """Log in using an emoji code."""
@@ -89,6 +90,8 @@ class StudentLogin:
             raise HarvestConnectionError(self.base_url, str(e))
 
         raise_for_status(post_resp)
+
+        self.access_token = post_resp.cookies.get("access_token")
 
     def me(self):
         """Return information about logged in user."""

@@ -58,6 +58,9 @@ def emoji_login(ctx, emoji_code):
         click.echo(f"API error: {err}", err=True)
         sys.exit(1)
 
+    if verbose:
+        click.echo(f"Login OK, access token is {student.access_token}")
+
     # Get user data
     if verbose:
         click.echo("Getting user data...")

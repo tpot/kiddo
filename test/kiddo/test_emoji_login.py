@@ -37,3 +37,5 @@ def test_emoji_login(httpserver):
     url = httpserver.url_for("/")
     s = StudentLogin(url)
     s.login(emoji_pass)
+
+    assert s.access_token == access_token
