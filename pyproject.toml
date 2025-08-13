@@ -20,3 +20,9 @@ dependencies = [
 
 [project.scripts]
 kiddo = "kiddo.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-httpserver>=1.1.1",
+]
