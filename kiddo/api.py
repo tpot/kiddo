@@ -1,6 +1,32 @@
+from dataclasses import dataclass
+
 import requests
 from bs4 import BeautifulSoup
 from http.client import HTTPConnection
+
+@dataclass
+class HarvestAPIError(Exception):
+    status_code: int
+    url: str
+    message: str = ""
+
+    def __str__(self) -> str:
+        base = f"HTTP {self.status_code} on {self.url}"
+        return f"{base}: {self.message}" if self.message else base
+
+class HarvestUnauthorisedError(HarvestAPIError):
+    pass
+
+class HarvestNotFoundError(HarvestAPIError):
+    pass
+
+def raise_for_status(resp):
+    """Raise appropriate Exception subclass for HTTP status 403 or 404."""
+    if resp.status_code == 401:
+        raise HarvestUnauthorisedError(resp.status_code, resp.url)
+    if resp.status_code == 404:
+        raise HarvestNotFoundError(resp.status_code, resp.url)
+    resp.raise_for_status()
 
 class StudentLogin:
 
@@ -19,7 +45,7 @@ class StudentLogin:
 
         # Get base page
         resp = self.session.get(f"{self.base_url}/emoji-pass/")
-        resp.raise_for_status()
+        raise_for_status(resp)
 
         # Pull out CSRF token
         soup = BeautifulSoup(resp.text, "html.parser")
@@ -45,13 +71,13 @@ class StudentLogin:
 
         post_resp = self.session.post(
             f"{self.base_url}/emoji-pass/", **params)
-        post_resp.raise_for_status()
+        raise_for_status(post_resp)
 
     def me(self):
         """Return information about logged in user."""
 
         resp = self.session.get(f"{self.base_url}/api/me")
-        resp.raise_for_status()
+        raise_for_status(resp)
 
         return resp.json()
 
@@ -59,6 +85,6 @@ class StudentLogin:
         """Return information on a challenge by ID number."""
 
         resp = self.session.get(f"{self.base_url}/api/challenge/{id}")
-        resp.raise_for_status()
+        raise_for_status(resp)
 
         return resp.json()
