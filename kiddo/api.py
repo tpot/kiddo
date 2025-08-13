@@ -5,6 +5,11 @@ from bs4 import BeautifulSoup
 from http.client import HTTPConnection
 
 @dataclass
+class HarvestConnectionError(Exception):
+    base_url: str
+    message: str
+
+@dataclass
 class HarvestAPIError(Exception):
     status_code: int
     url: str
@@ -44,7 +49,13 @@ class StudentLogin:
         """Log in using an emoji code."""
 
         # Get base page
-        resp = self.session.get(f"{self.base_url}/emoji-pass/")
+        resp = None
+
+        try:
+            resp = self.session.get(f"{self.base_url}/emoji-pass/")
+        except requests.exceptions.ConnectionError as e:
+            raise HarvestConnectionError(self.base_url, str(e))
+
         raise_for_status(resp)
 
         # Pull out CSRF token
@@ -69,14 +80,26 @@ class StudentLogin:
             },
         }
 
-        post_resp = self.session.post(
-            f"{self.base_url}/emoji-pass/", **params)
+        post_resp = None
+
+        try:
+            post_resp = self.session.post(
+                f"{self.base_url}/emoji-pass/", **params)
+        except requests.exceptions.ConnectionError as e:
+            raise HarvestConnectionError(self.base_url, str(e))
+
         raise_for_status(post_resp)
 
     def me(self):
         """Return information about logged in user."""
 
-        resp = self.session.get(f"{self.base_url}/api/me")
+        resp = None
+
+        try:
+            resp = self.session.get(f"{self.base_url}/api/me")
+        except requests.exceptions.ConnectionError as e:
+            raise HarvestConnectionError(self.base_url, str(e))
+
         raise_for_status(resp)
 
         return resp.json()
@@ -84,7 +107,13 @@ class StudentLogin:
     def challenge(self, id):
         """Return information on a challenge by ID number."""
 
-        resp = self.session.get(f"{self.base_url}/api/challenge/{id}")
+        resp = None
+
+        try:
+            resp = self.session.get(f"{self.base_url}/api/challenge/{id}")
+        except requests.exceptions.ConnectionError as e:
+            raise HarvestConnectionError(self.base_url, str(e))
+
         raise_for_status(resp)
 
         return resp.json()
@@ -92,7 +121,13 @@ class StudentLogin:
     def challenge_progress(self, id, version):
         """Return information on a challenge by ID number."""
 
-        resp = self.session.get(f"{self.base_url}/api/challenge/{id}/version/{version}/progress")
+        resp = None
+
+        try:
+            resp = self.session.get(f"{self.base_url}/api/challenge/{id}/version/{version}/progress")
+        except requests.exceptions.ConnectionError as e:
+            raise HarvestConnectionError(self.base_url, str(e))
+
         raise_for_status(resp)
 
         return resp.json()

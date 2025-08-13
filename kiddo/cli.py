@@ -3,7 +3,7 @@ import click
 import sys
 from urllib.parse import urlparse
 
-from kiddo.api import StudentLogin, HarvestAPIError, HarvestNotFoundError, HarvestUnauthorisedError
+from kiddo.api import StudentLogin, HarvestAPIError, HarvestConnectionError, HarvestNotFoundError, HarvestUnauthorisedError
 
 @click.group()
 @click.option("--verbose", "-v", is_flag=True, help="Display info on what's happening.")
@@ -48,6 +48,12 @@ def emoji_login(ctx, emoji_code):
 
     try:
         student.login(emoji_code)
+    except HarvestConnectionError as err:
+        if verbose:
+            click.echo(f"Connection error: {err}", err=True)
+        else:
+            click.echo(f"Error connecting to {err.base_url}", err=True)
+        sys.exit(1)
     except HarvestAPIError as err:
         click.echo(f"API error: {err}", err=True)
         sys.exit(1)
@@ -58,6 +64,12 @@ def emoji_login(ctx, emoji_code):
 
     try:
         user_data = student.me()
+    except HarvestConnectionError as err:
+        if verbose:
+            click.echo(f"Connection error: {err}", err=True)
+        else:
+            click.echo(f"Error connecting to {err.base_url}", err=True)
+        sys.exit(1)
     except HarvestUnauthorisedError:
         click.echo("Unauthorised, no such emoji code", err=True)
         sys.exit(1)
@@ -85,6 +97,12 @@ def get_challenge(ctx, emoji_code, challenge_id):
 
     try:
         student.login(emoji_code)
+    except HarvestConnectionError as err:
+        if verbose:
+            click.echo(f"Connection error: {err}", err=True)
+        else:
+            click.echo(f"Error connecting to {err.base_url}", err=True)
+        sys.exit(1)
     except HarvestAPIError as err:
         click.echo(f"API error: {err}", err=True)
         sys.exit(1)
@@ -92,6 +110,12 @@ def get_challenge(ctx, emoji_code, challenge_id):
     try:
         result = student.challenge(challenge_id)
         click.echo(json.dumps(result, indent=2))
+    except HarvestConnectionError as err:
+        if verbose:
+            click.echo(f"Connection error: {err}", err=True)
+        else:
+            click.echo(f"Error connecting to {err.base_url}", err=True)
+        sys.exit(1)
     except HarvestNotFoundError:
         click.echo(f"No such challenge ID {challenge_id}", err=True)
         sys.exit(1)
@@ -118,6 +142,12 @@ def get_challenge_progress(ctx, emoji_code, challenge_id, challenge_version):
 
     try:
         student.login(emoji_code)
+    except HarvestConnectionError as err:
+        if verbose:
+            click.echo(f"Connection error: {err}", err=True)
+        else:
+            click.echo(f"Error connecting to {err.base_url}", err=True)
+        sys.exit(1)
     except HarvestAPIError as err:
         click.echo(f"API error: {err}", err=True)
         sys.exit(1)
@@ -125,6 +155,12 @@ def get_challenge_progress(ctx, emoji_code, challenge_id, challenge_version):
     try:
         result = student.challenge_progress(challenge_id, challenge_version)
         click.echo(json.dumps(result, indent=2))
+    except HarvestConnectionError as err:
+        if verbose:
+            click.echo(f"Connection error: {err}", err=True)
+        else:
+            click.echo(f"Error connecting to {err.base_url}", err=True)
+        sys.exit(1)
     except HarvestNotFoundError:
         click.echo(f"Progress for challenge {challenge_id}, version {challenge_version} not found", err=True)
         sys.exit(1)
