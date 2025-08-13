@@ -1,7 +1,8 @@
 import json
 import click
+import sys
 
-from kiddo.api import StudentLogin
+from kiddo.api import StudentLogin, HarvestAPIError, HarvestNotFoundError, HarvestUnauthorisedError
 
 @click.group()
 @click.option("--verbose", "-v", is_flag=True, help="Display info on what's happening.")
@@ -27,13 +28,24 @@ def emoji_login(ctx, emoji_code):
     student = ctx.obj["student"]
     verbose = ctx.obj["verbose"]
 
-    student.login(emoji_code)
+    try:
+        student.login(emoji_code)
+    except HarvestAPIError as err:
+        click.echo(f"API error: {err}", err=True)
+        sys.exit(1)
 
     # Get user data
     if verbose:
         click.echo("Getting user data...")
 
-    user_data = student.me()
+    try:
+        user_data = student.me()
+    except HarvestUnauthorisedError:
+        click.echo("Unauthorised, no such emoji code", err=True)
+        sys.exit(1)
+    except HarvestAPIError as err:
+        click.echo(f"API error: {err}", err=True)
+        sys.exit(1)
 
     if verbose:
         click.echo(json.dumps(user_data, indent=2))
@@ -53,11 +65,24 @@ def get_challenge(ctx, emoji_code, challenge_id):
     if verbose:
         click.echo(f"Getting challenge data for id={challenge_id}")
 
-    student.login(emoji_code)
+    try:
+        student.login(emoji_code)
+    except HarvestAPIError as err:
+        click.echo(f"API error: {err}", err=True)
+        sys.exit(1)
 
-    result = student.challenge(challenge_id)
-
-    click.echo(json.dumps(result, indent=2))
+    try:
+        result = student.challenge(challenge_id)
+        click.echo(json.dumps(result, indent=2))
+    except HarvestNotFoundError:
+        click.echo(f"No such challenge ID {challenge_id}", err=True)
+        sys.exit(1)
+    except HarvestUnauthorisedError:
+        click.echo("Unauthorised, no such emoji code", err=True)
+        sys.exit(1)
+    except HarvestAPIError as err:
+        click.echo(f"API error: {err}", err=True)
+        sys.exit(1)
 
 # Main function invoked by pip
 def main():
