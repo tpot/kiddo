@@ -1,6 +1,7 @@
 import json
 import click
 import sys
+from urllib.parse import urlparse
 
 from kiddo.api import StudentLogin, HarvestAPIError, HarvestNotFoundError, HarvestUnauthorisedError
 
@@ -11,8 +12,25 @@ from kiddo.api import StudentLogin, HarvestAPIError, HarvestNotFoundError, Harve
 @click.pass_context
 def cli(ctx, verbose, debug, base_url):
 
+    # Validate base URL
+    if base_url is None:
+        click.echo("Must specify a base URL with --base-url or $KIDDO_BASE_URL", err=True)
+        sys.exit(1)
+
+    parsed_url = urlparse(base_url)
+
+    if parsed_url.scheme not in ("http", "https"):
+        click.echo("Invalid base URL - must be http or https.", err=True)
+        sys.exit(1)
+
+    if len(parsed_url.query) > 0:
+        click.echo("Invalid base URL - should not contain query params.", err=True)
+        sys.exit(1)
+
+    # Create student session
     student = StudentLogin(base_url, debug=debug)
 
+    # Make context for subcommands
     ctx.obj = {
         "verbose": verbose,
         "debug": debug,
