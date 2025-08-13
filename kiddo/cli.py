@@ -84,6 +84,39 @@ def get_challenge(ctx, emoji_code, challenge_id):
         click.echo(f"API error: {err}", err=True)
         sys.exit(1)
 
+@cli.command()
+@click.pass_context
+@click.option("--code", "emoji_code", required=True, help="Emoji code in plain text format.")
+@click.option("--challenge-id", "-c", required=True, type=int, help="ID number of challenge.")
+@click.option("--challenge-version", required=True, type=int, help="ID number of challenge.")
+def get_challenge_progress(ctx, emoji_code, challenge_id, challenge_version):
+    """Get progress for a challenge."""
+
+    student = ctx.obj["student"]
+    verbose = ctx.obj["verbose"]
+
+    if verbose:
+        click.echo(f"Getting challenge progress data for id={challenge_id}, version={challenge_version}")
+
+    try:
+        student.login(emoji_code)
+    except HarvestAPIError as err:
+        click.echo(f"API error: {err}", err=True)
+        sys.exit(1)
+
+    try:
+        result = student.challenge_progress(challenge_id, challenge_version)
+        click.echo(json.dumps(result, indent=2))
+    except HarvestNotFoundError:
+        click.echo(f"Progress for challenge {challenge_id}, version {challenge_version} not found", err=True)
+        sys.exit(1)
+    except HarvestUnauthorisedError:
+        click.echo("Unauthorised, no such emoji code", err=True)
+        sys.exit(1)
+    except HarvestAPIError as err:
+        click.echo(f"API error: {err}", err=True)
+        sys.exit(1)
+
 # Main function invoked by pip
 def main():
    cli()
